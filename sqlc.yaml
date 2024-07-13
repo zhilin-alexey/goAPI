@@ -1,0 +1,73 @@
+version: "2"
+sql:
+  - engine: "postgresql"
+    queries: "database/queries"
+    schema: "database/migrations"
+    database:
+      uri: "postgres://postgres:1@localhost:5432/postgres?sslmode=disable"
+    gen:
+      go:
+        package: "goAPI"
+        out: "database/sqlc"
+        sql_package: "pgx/v5"
+        emit_prepared_queries: true
+        emit_json_tags: true
+        json_tags_case_style: "camel"
+        emit_interface: false
+        emit_exact_table_names: false
+        emit_pointers_for_null_types: true
+        overrides:
+          - db_type: "uuid"
+            go_type:
+              import: "github.com/google/uuid"
+              type: "UUID"
+              pointer: true
+            nullable: true
+          - db_type: "uuid"
+            go_type:
+              import: "github.com/google/uuid"
+              type: "UUID"
+          - db_type: "timestamptz"
+            go_type:
+              import: "time"
+              type: "Time"
+              pointer: true
+            nullable: true
+          - db_type: "timestamptz"
+            go_type:
+              import: "time"
+              type: "Time"
+          - column: "people.id"
+            go_struct_tag: format:"uuid" example:"00000000-0000-0000-0000-000000000000"
+
+          - column: "people.name"
+            go_struct_tag: example:"Иван"
+          - column: "people.surname"
+            go_struct_tag: example:"Иванов"
+          - column: "people.patronymic"
+            go_struct_tag: example:"Иванович"
+          - column: "people.address"
+            go_struct_tag: example:"3-й Автозаводский проезд, вл13, Москва, 115280"
+          - column: "people.passport_serie"
+            go_struct_tag: example:"1234" minLength:"4" maxLength:"4"
+          - column: "people.passport_number"
+            go_struct_tag: example:"123456" minLength:"6" maxLength:"6"
+          - column: "tasks.id"
+            go_struct_tag: format:"uuid" example:"00000000-0000-0000-0000-000000000000"
+          - column: "tasks.name"
+            go_struct_tag: example:"Помыть посуду"
+          - column: "tasks.start_time"
+            go_type:
+              import: "time"
+              type: "Time"
+            go_struct_tag: format:"dateTime" example:"2022-01-01T00:00:00Z"
+          - column: "tasks.end_time"
+            go_type:
+              import: "time"
+              type: "Time"
+              pointer: true
+            go_struct_tag: format:"dateTime" example:"2022-01-01T00:00:00Z"
+            nullable: true
+        rename:
+          column_2: "PeriodStart"
+          column_3: "PeriodEnd"

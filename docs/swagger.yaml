@@ -1,0 +1,365 @@
+basePath: /
+definitions:
+  controllers.EditParams:
+    properties:
+      address:
+        example: 3-й Автозаводский проезд, вл13, Москва, 115280
+        minLength: 10
+        type: string
+      name:
+        example: Иван
+        minLength: 3
+        type: string
+      passportNumber:
+        example: "123456"
+        maxLength: 6
+        minLength: 6
+        type: string
+      passportSerie:
+        example: "1234"
+        maxLength: 4
+        minLength: 4
+        type: string
+      patronymic:
+        example: Иванович
+        minLength: 3
+        type: string
+      surname:
+        example: Иванов
+        minLength: 3
+        type: string
+    type: object
+  goAPI.Person:
+    properties:
+      address:
+        example: 3-й Автозаводский проезд, вл13, Москва, 115280
+        type: string
+      id:
+        example: 00000000-0000-0000-0000-000000000000
+        format: uuid
+        type: string
+      name:
+        example: Иван
+        type: string
+      passportNumber:
+        example: "123456"
+        maxLength: 6
+        minLength: 6
+        type: string
+      passportSerie:
+        example: "1234"
+        maxLength: 4
+        minLength: 4
+        type: string
+      patronymic:
+        example: Иванович
+        type: string
+      surname:
+        example: Иванов
+        type: string
+    type: object
+  goAPI.Task:
+    properties:
+      endTime:
+        example: "2022-01-01T00:00:00Z"
+        format: dateTime
+        type: string
+      id:
+        example: 00000000-0000-0000-0000-000000000000
+        format: uuid
+        type: string
+      name:
+        example: Помыть посуду
+        type: string
+      peopleId:
+        type: string
+      startTime:
+        example: "2022-01-01T00:00:00Z"
+        format: dateTime
+        type: string
+    type: object
+host: localhost:8080
+info:
+  contact: {}
+  description: go API with task tracking
+  title: goAPI
+  version: "1.0"
+paths:
+  /info:
+    get:
+      consumes:
+      - application/json
+      description: get people by passport details
+      parameters:
+      - description: Passport serie
+        in: query
+        name: passportSerie
+        required: true
+        type: string
+      - description: Passport number
+        in: query
+        name: passportNumber
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/goAPI.Person'
+        "400":
+          description: Bad Request
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+      summary: Show a people
+      tags:
+      - people
+  /people:
+    delete:
+      consumes:
+      - application/json
+      description: delete people by multiple filters
+      parameters:
+      - description: Id
+        in: path
+        name: id
+        type: string
+      - description: Surname
+        in: query
+        name: surname
+        type: string
+      - description: Patronymic
+        in: query
+        name: patronymic
+        type: string
+      - description: Address
+        in: query
+        name: address
+        type: string
+      - description: Passport serie
+        in: query
+        name: passportSerie
+        type: string
+      - description: Passport number
+        in: query
+        name: passportNumber
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Bad Request
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+      summary: Delete people
+      tags:
+      - people
+    get:
+      consumes:
+      - application/json
+      description: get people by multiple filters
+      parameters:
+      - description: Id
+        in: path
+        name: id
+        type: string
+      - description: Surname
+        in: query
+        name: surname
+        type: string
+      - description: Patronymic
+        in: query
+        name: patronymic
+        type: string
+      - description: Address
+        in: query
+        name: address
+        type: string
+      - description: Passport serie
+        in: query
+        name: passportSerie
+        type: string
+      - description: Passport number
+        in: query
+        name: passportNumber
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/goAPI.Person'
+            type: array
+        "400":
+          description: Bad Request
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+      summary: Show a multiple full people
+      tags:
+      - people
+    post:
+      consumes:
+      - application/json
+      description: create people by passport number
+      parameters:
+      - in: query
+        name: passportNumber
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/goAPI.Person'
+        "400":
+          description: Bad Request
+        "500":
+          description: Internal Server Error
+      summary: Create people
+      tags:
+      - people
+  /people/{id}:
+    patch:
+      consumes:
+      - application/json
+      description: edit people by id
+      parameters:
+      - description: Id
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: People data to edit
+        in: body
+        name: people
+        required: true
+        schema:
+          $ref: '#/definitions/controllers.EditParams'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/goAPI.Person'
+        "400":
+          description: Bad Request
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+      summary: Edit people
+      tags:
+      - people
+  /people/{id}/task/end:
+    post:
+      consumes:
+      - application/json
+      description: end task by people id
+      parameters:
+      - description: People id
+        in: path
+        name: people
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/goAPI.Task'
+        "400":
+          description: Bad Request
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+      summary: End task
+      tags:
+      - tasks
+  /people/{id}/task/start:
+    post:
+      consumes:
+      - application/json
+      description: start task by people id
+      parameters:
+      - description: People id
+        in: path
+        name: people
+        required: true
+        type: string
+      - description: Task name
+        in: query
+        name: name
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/goAPI.Task'
+        "400":
+          description: Bad Request
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+      summary: Start task
+      tags:
+      - tasks
+  /people/{id}/tasks:
+    get:
+      consumes:
+      - application/json
+      description: get tasks by people id and period of time
+      parameters:
+      - description: People id
+        in: path
+        name: people
+        required: true
+        type: string
+      - description: Period start
+        in: query
+        name: periodStart
+        type: string
+      - description: Period end
+        in: query
+        name: periodEnd
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/goAPI.Task'
+            type: array
+        "400":
+          description: Bad Request
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+      summary: Get people tasks
+      tags:
+      - tasks
+schemes:
+- http
+swagger: "2.0"
